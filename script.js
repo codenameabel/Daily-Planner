@@ -1,23 +1,80 @@
 const form = document.getElementById('form');
 const input = document.getElementById('input');
-const todos = document.getElementById('todos');
+const todosUL = document.getElementById('todos');
 
+
+const todos = JSON.parse(localStorage.getItem
+    ('todos'));
+
+    if(todos) {
+        todos.forEach(todo => {
+            addTodo(todo)
+        });
+    }
+
+// If todo item entered than on submit todo will be added, no empty answers accepted 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
+    addTodo();
+});
 
-    const todoText = input.value;
+// add todo to list and store into local storage 
+function addTodo(todo) {
+    let todoText = input.value;
 
+    if (todo) {
+        todoText = todo.text;
+    }
+    
     if (todoText) {
         const todoEl = document.createElement
-            ('li');
+            ("li");
+        if (todo && todo.completed) {
+            todoEl.classList.add("completed");
+        }
+
         todoEl.innerText = todoText;
-        todos.appendChild(todoEl);
 
+        todoEl.addEventListener("click", () => {
+            todoEl.classList.toggle("completed");
 
-        todoEl = addEventListener('click', () => {
-            todoEl.classList.toggle('completed');
-        })
+            updateLS();
+        });
+
+        todoEl.addEventListener('contextmenu',
+            (e) => {
+                e.preventDefault();
+
+                todoEl.remove();
+
+                updateLS();
+            });
+
+        todosUL.appendChild(todoEl);
 
         input.value = "";
+
+        updateLS();
     }
-});
+}
+
+// Store todo input into local storage 
+function updateLS() {
+    const todosEl = document.querySelectorAll
+        ('li');
+
+    const todos = [];
+
+    todosEl.forEach(todoEl => {
+        todos.push({
+            text: todoEl.innerText,
+            completed: todoEl.classList.contains
+                ("completed"),
+        });
+    });
+
+    localStorage.setItem("todos", JSON.stringify
+        (todos));
+}
+
+
