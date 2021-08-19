@@ -1,80 +1,48 @@
-const form = document.getElementById('form');
-const input = document.getElementById('input');
-const todosUL = document.getElementById('todos');
+var dayDisplay = document.querySelector("#currentDay");
+var currentDate = moment();
+dayDisplay.textContent = currentDate.format("dddd, MMM Do YYYY");
+
+$(".saveBtn").on("click", function () {
+    console.log(this);
+    var text = $(this).siblings(".description").val();
+    var time = $(this).parent().attr("id");
+
+    localStorage.setItem(time, text);
+})
+
+$("#time9 .description").val(localStorage.getItem("time9"));
+$("#time10 .description").val(localStorage.getItem("time10"));
+$("#time11 .description").val(localStorage.getItem("time11"));
+$("#time12 .description").val(localStorage.getItem("time12"));
+$("#time13 .description").val(localStorage.getItem("time13"));
+$("#time14 .description").val(localStorage.getItem("time14"));
+$("#time15 .description").val(localStorage.getItem("time15"));
+$("#time16 .description").val(localStorage.getItem("time16"));
+$("#time17 .description").val(localStorage.getItem("time17"));
+$("#timeHappyHour .description").val(localStorage.getItem("timeHappyHour"));
 
 
-const todos = JSON.parse(localStorage.getItem
-    ('todos'));
+function hourTimer() {
+    var currentTime = moment().hour();
 
-    if(todos) {
-        todos.forEach(todo => {
-            addTodo(todo)
-        });
-    }
+    $(".time-block").each(function () {
+        var eachHour = parseInt($(this).attr("id").split("time")[1]);
+        console.log(eachHour, currentTime);
 
-// If todo item entered than on submit todo will be added, no empty answers accepted 
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    addTodo();
-});
-
-// add todo to list and store into local storage 
-function addTodo(todo) {
-    let todoText = input.value;
-
-    if (todo) {
-        todoText = todo.text;
-    }
-    
-    if (todoText) {
-        const todoEl = document.createElement
-            ("li");
-        if (todo && todo.completed) {
-            todoEl.classList.add("completed");
+        if (eachHour < currentTime) {
+            $(this).addClass("past");
+            $(this).removeClass("present");
+            $(this).removeClass("future");
+        } else if (eachHour === currentTime) {
+            $(this).removeClass("past");
+            $(this).addClass("present");
+            $(this).removeClass("future");
+        } else {
+            $(this).removeClass("past");
+            $(this).removeClass("present");
+            $(this).addClass("future");
         }
-
-        todoEl.innerText = todoText;
-
-        todoEl.addEventListener("click", () => {
-            todoEl.classList.toggle("completed");
-
-            updateLS();
-        });
-
-        todoEl.addEventListener('contextmenu',
-            (e) => {
-                e.preventDefault();
-
-                todoEl.remove();
-
-                updateLS();
-            });
-
-        todosUL.appendChild(todoEl);
-
-        input.value = "";
-
-        updateLS();
-    }
+    })
 }
 
-// Store todo input into local storage 
-function updateLS() {
-    const todosEl = document.querySelectorAll
-        ('li');
-
-    const todos = [];
-
-    todosEl.forEach(todoEl => {
-        todos.push({
-            text: todoEl.innerText,
-            completed: todoEl.classList.contains
-                ("completed"),
-        });
-    });
-
-    localStorage.setItem("todos", JSON.stringify
-        (todos));
-}
-
-
+hourTimer();
